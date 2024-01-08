@@ -1,4 +1,5 @@
 #pragma once
+#pragma once
 #ifndef SHADER_H
 #define SHADER_H
 
@@ -10,7 +11,8 @@
 #include <fstream>
 #include <sstream>
 #include <iostream>
-#include <set>
+
+#include <glm/gtx/string_cast.hpp>
 
 // Macro for detecting an openGL error.
 // Only works if the program is compiled in debug mode.
@@ -23,16 +25,21 @@
 // Note calling GL_CHECK(); will result to an error (arg stmt is missing)
 inline void CheckOpenGLError(const char* stmt, const char* fname, int line)
 {
-    GLenum err = glGetError();
-    if (err != GL_NO_ERROR)
-    {
-        // Flush a error message in the error exit
-        std::cerr << "[ERROR] OpenGL error " << (int)err << " at " << fname << ":" << line << " for " << stmt << "\n";
-        std::cerr.flush();
-        // Raise exception and terminate the program. 
-        // Can be commented out if needed
-        abort(); 
-    }
+	GLenum err;
+	bool terminate = false;
+    while ((err = glGetError()) != GL_NO_ERROR)
+	{
+		terminate = true;
+		// Flush a error message in the error exit
+		std::cerr << "OpenGL error " << (int)err << " at " << fname << ":" << line << " for " << stmt << "\n";
+		std::cerr.flush();
+	}
+	if (terminate)
+	{
+		// Terminate the program. 
+		// Can be commented out if needed
+		abort();
+	}
 }
 #ifdef _DEBUG
 #define GL_CHECK(stmt) stmt;  \
@@ -68,49 +75,22 @@ public:
    // use shader program
    inline void bind() const { 
        if(!m_linked) {
-            // Warn user
-            std::cerr << "[ERROR] Shader is not properly linked!\n";
-            if(m_terminate) {
-                abort();
-            }
+           // Warn user
+           std::cerr << "Shader is not properly linked!\n";
        }
        glUseProgram(m_ID); 
    }
    
 
-    // get id value corresponding to uniform
+   // get id value corresponding to attribute
     // ------------------------------------------------------------------------
-    inline int uniformLocation(const std::string name) { 
-        GLint v =  glGetUniformLocation(m_ID, name.c_str()); 
-        if(v == -1) {
-            if(m_previous_errs.find(name) == m_previous_errs.end()) {
-                // Show the error only one time
-                std::cerr << "[ERROR] Uniform '" << name << "' is not found.\n";
-                m_previous_errs.insert(name);
-            }
-            if(m_terminate) {
-                abort();
-            }
-        }
-        return v;
-    }
-    // get id value corresponding to attribute
-    // ------------------------------------------------------------------------
-     inline int attributeLocation(const std::string name) { 
-        GLint v =  glGetAttribLocation(m_ID, name.c_str()); 
-        if(v == -1) {
-            if(m_previous_errs.find(name) == m_previous_errs.end()) {
-                std::cerr << "[ERROR] Attribute '" << name << "' is not found.\n";
-                m_previous_errs.insert(name);
-            }
-            if(m_terminate) {
-                abort();
-            }
-        }
-        return v;
-    }
+   inline GLint attributeLocation(const char* name) const { return glGetAttribLocation(m_ID, name); }
+   inline GLint attributeLocation(const std::string name) const { return glGetAttribLocation(m_ID, name.c_str()); }
+   inline GLint uniformLocation(const char* name) const { return glGetUniformLocation(m_ID, name); }
+   inline GLint uniformLocation(const std::string name) const { return glGetUniformLocation(m_ID, name.c_str()); }
 
     // utility uniform functions
+    // ------------------------------------------------------------------------
     inline void setUniformValue(GLint location, bool value) const { glUniform1i(location, (int)value); }
 	inline void setUniformValue(GLint location, int value) const { glUniform1i(location, value); }
 	inline void setUniformValue(GLint location, float value) const { glUniform1f(location, value); }
@@ -119,73 +99,38 @@ public:
 	inline void setUniformValue(GLint location, const glm::vec4& vec) const { glUniform4fv(location, 1, &vec[0]); }
 	inline void setUniformValue(GLint location, const glm::vec3& vec) const { glUniform3fv(location, 1, &vec[0]); }
 
-    // ------------------------------------------------------------------------
-    inline void setBool(const std::string& name, bool value) { 
-        int loc = uniformLocation(name);
-        if(loc != -1) {
-            glUniform1i(loc, (int)value);
-        } 
-    }
-    // ------------------------------------------------------------------------
-    inline void setInt(const std::string& name, int value) { 
-        int loc = uniformLocation(name);
-        if(loc != -1) {
-             glUniform1i(loc, value); 
-        }
-    }
-    // ------------------------------------------------------------------------
-    inline void setFloat(const std::string& name, float value) { 
-        int loc = uniformLocation(name);
-        if(loc != -1) {
-            glUniform1f(loc, value); 
-        }  
-    }
-    // ------------------------------------------------------------------------
-    inline void setMat4(const std::string& name, const glm::mat4& mat) { 
-        int loc = uniformLocation(name);
-        if(loc != -1) {
-            glUniformMatrix4fv(loc, 1, GL_FALSE, &mat[0][0]);
-        }  
-    }
-
-    // ------------------------------------------------------------------------
-    inline void setMat3(const std::string& name, const glm::mat3& mat) { 
-        int loc = uniformLocation(name);
-        if(loc != -1) {
-            glUniformMatrix3fv(loc, 1, GL_FALSE, &mat[0][0]); 
-        }      
-    }
-
-    // ------------------------------------------------------------------------
-    inline void setVec4(const std::string& name, const glm::vec4& value) { 
-        int loc = uniformLocation(name);
-        if(loc != -1) {
-            glUniform4fv(loc, 1, &value[0]);
-        } 
-
-    }
-
-    // ------------------------------------------------------------------------
-    inline void setVec3(const std::string& name, const glm::vec3& value) { 
-        int loc = uniformLocation(name);
-        if(loc != -1) {
-            glUniform3fv(loc, 1, &value[0]);   
-        } 
-    }
-
-    // change if we terminate or not the program on error
-    // ------------------------------------------------------------------------
-    inline void setTerminate(bool v) { m_terminate = v; }
-
 private:
     // Shader program id
     GLuint m_ID;
-    // Does the shader is link?
+    // Is the shader linked?
     bool m_linked = false;
-    // Do we terminate the program if invalid value is detected?
-    bool m_terminate = false;
-    std::set<std::string> m_previous_errs;
     // List of the different shaders (can be reused if necessary)
     std::map<std::string, GLuint> m_shaders_ids;
 };
+
+inline std::ostream& operator<<(std::ostream& out, const glm::vec2& g)
+{
+	return out << glm::to_string(g);
+}
+
+inline std::ostream& operator<<(std::ostream& out, const glm::vec3& g)
+{
+	return out << glm::to_string(g);
+}
+
+inline std::ostream& operator<<(std::ostream& out, const glm::vec4& g)
+{
+	return out << glm::to_string(g);
+}
+
+inline std::ostream& operator<<(std::ostream& out, const glm::mat3& g)
+{
+	return out << glm::to_string(g);
+}
+
+inline std::ostream& operator<<(std::ostream& out, const glm::mat4& g)
+{
+	return out << glm::to_string(g);
+}
+
 #endif
