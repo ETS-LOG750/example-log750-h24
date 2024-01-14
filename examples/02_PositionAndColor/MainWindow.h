@@ -47,7 +47,7 @@ private:
 
 	// Les identifiants pour les VAO et VBO
 	enum VAO_IDs { Triangles, NumVAOs };
-	enum Buffer_IDs { ArrayBuffer, NumBuffers };
+	enum Buffer_IDs { MainBuffer, NumBuffers };
 	GLuint m_VAOs[NumVAOs];
 	GLuint m_buffers[NumBuffers];
 

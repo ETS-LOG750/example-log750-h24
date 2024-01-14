@@ -81,7 +81,6 @@ int MainWindow::Initialisation()
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 	glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, true);  // For debug callback 
-
 #ifdef __APPLE__
 	glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 #endif
@@ -111,6 +110,7 @@ int MainWindow::Initialisation()
 	int flags; glGetIntegerv(GL_CONTEXT_FLAGS, &flags);
 	if (flags & GL_CONTEXT_FLAG_DEBUG_BIT)
 	{
+		std::cout << "Debug context created\n";
 		// initialize debug output 
 		glEnable(GL_DEBUG_OUTPUT);
 		glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
@@ -135,7 +135,8 @@ void MainWindow::InitializeCallback() {
 }
 
 int MainWindow::InitializeGL()
-{
+{	
+	// Shader configuration
 	const std::string directory = SHADERS_DIR;
 	bool mainShaderSuccess = true;
 	m_mainShader = std::make_unique<ShaderProgram>();
@@ -193,18 +194,18 @@ int MainWindow::InitializeGL()
 	glCreateBuffers(NumBuffers, m_buffers);
 
 	// Allocations
-	glNamedBufferData(m_buffers[ArrayBuffer], 
+	glNamedBufferData(m_buffers[MainBuffer], 
 		long(sizeof(glm::vec3) * vertices.size() + sizeof(glm::vec4) * colors.size()), // Taille totale du buffer
 		nullptr,  // Données à transférer
 		GL_STATIC_DRAW // Utilisation des données (modification fréquente ou non)
 	);
 	// Upload vertex informations (vertices, color)
-	glNamedBufferSubData(m_buffers[ArrayBuffer], 
+	glNamedBufferSubData(m_buffers[MainBuffer], 
 		0, // Offset
 		long(sizeof(glm::vec3) * vertices.size()), // Taille des données à transférer
 		vertices.data() // Données à transférer
 	);
-	glNamedBufferSubData(m_buffers[ArrayBuffer], 
+	glNamedBufferSubData(m_buffers[MainBuffer], 
 		long(sizeof(glm::vec3) * vertices.size()), // Offset (après les positions)
 		long(sizeof(glm::vec4) * colors.size()),  // Taille des données à transférer
 		colors.data() // Données à transférer
@@ -216,12 +217,12 @@ int MainWindow::InitializeGL()
 		3, // Number of components
 		GL_FLOAT, // Type 
 		GL_FALSE, // Normalize 
-		0 // Offset of the first component
+		0 // Relative offset (first component)
 	);
 	glVertexArrayVertexBuffer(m_VAOs[Triangles], 
 		m_vPositionLocation, // Binding point 
-		m_buffers[ArrayBuffer], // VBO 
-		0, // Offset 
+		m_buffers[MainBuffer], // VBO 
+		0, // Offset (when the position starts)
 		sizeof(glm::vec3) // Stride
 	);
 	glEnableVertexArrayAttrib(m_VAOs[Triangles], 
@@ -237,12 +238,12 @@ int MainWindow::InitializeGL()
 		4, // Number of components (RGBA)
 		GL_FLOAT, // Type 
 		GL_FALSE, // Normalize 
-		0 // Offset of the first component
+		0 // Relative offset (first component)
 	);
 	glVertexArrayVertexBuffer(m_VAOs[Triangles], 
 		m_vColorLocation, // Binding point 
-		m_buffers[ArrayBuffer], // VBO 
-		sizeof(glm::vec3) * vertices.size(), // Offset 
+		m_buffers[MainBuffer], // VBO 
+		sizeof(glm::vec3) * vertices.size(), // Offset (when the color starts)
 		sizeof(glm::vec4)  // Stride
 	);
 	glEnableVertexArrayAttrib(m_VAOs[Triangles], 

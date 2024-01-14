@@ -134,9 +134,9 @@ int MainWindow::InitializeGL()
 	////////////////////
 	// Configuration des VAO / VBO
 	glBindVertexArray(m_VAOs[Triangles]);
-	glBindBuffer(GL_ARRAY_BUFFER, m_buffers[ArrayBuffer]);
+	glBindBuffer(GL_ARRAY_BUFFER, m_buffers[MainBuffer]);
 
-	// Allocation du buffer m_buffers[ArrayBuffer]
+	// Allocation du buffer m_buffers[MainBuffer]
 	glBufferData(GL_ARRAY_BUFFER, 
 		long(sizeof(glm::vec3) * vertices.size() + sizeof(glm::vec4) * colors.size()), // Taille
 		nullptr, // Données a copier
