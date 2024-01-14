@@ -12,3 +12,8 @@ add_subdirectory(01_imGUIDemo)
 # - draw 2 triangles (simplest example)
 add_subdirectory(01_Triangles)
 add_subdirectory(01_Triangles_bindless)
+
+# Seance 02: Colors
+# - draw triangles with color
+add_subdirectory(02_PositionAndColor)
+add_subdirectory(02_PositionAndColor_bindless)
