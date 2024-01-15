@@ -48,6 +48,16 @@ inline void CheckOpenGLError(const char* stmt, const char* fname, int line)
 #define GL_CHECK(stmt) stmt
 #endif
 
+// Other function to check OpenGL error
+// From https://learnopengl.com/In-Practice/Debugging
+void APIENTRY glDebugOutput(GLenum source, 
+                            GLenum type, 
+                            unsigned int id, 
+                            GLenum severity, 
+                            GLsizei length, 
+                            const char *message, 
+                            const void *userParam);
+
 // Helper object that simplify the shader loading and interactions
 // Can be extended if necessary
 class ShaderProgram
@@ -91,13 +101,13 @@ public:
 
     // utility uniform functions
     // ------------------------------------------------------------------------
-    inline void setUniformValue(GLint location, bool value) const { glUniform1i(location, (int)value); }
-	inline void setUniformValue(GLint location, int value) const { glUniform1i(location, value); }
-	inline void setUniformValue(GLint location, float value) const { glUniform1f(location, value); }
-	inline void setUniformValue(GLint location, const glm::mat4& mat) const { glUniformMatrix4fv(location, 1, GL_FALSE, &mat[0][0]); }
-	inline void setUniformValue(GLint location, const glm::mat3& mat) const { glUniformMatrix3fv(location, 1, GL_FALSE, &mat[0][0]); }
-	inline void setUniformValue(GLint location, const glm::vec4& vec) const { glUniform4fv(location, 1, &vec[0]); }
-	inline void setUniformValue(GLint location, const glm::vec3& vec) const { glUniform3fv(location, 1, &vec[0]); }
+    inline void setUniformValue(GLint location, bool value) const { glProgramUniform1i(m_ID, location, (int)value); }
+	inline void setUniformValue(GLint location, int value) const { glProgramUniform1i(m_ID, location, value); }
+	inline void setUniformValue(GLint location, float value) const { glProgramUniform1f(m_ID, location, value); }
+	inline void setUniformValue(GLint location, const glm::mat4& mat) const { glProgramUniformMatrix4fv(m_ID, location, 1, GL_FALSE, &mat[0][0]); }
+	inline void setUniformValue(GLint location, const glm::mat3& mat) const { glProgramUniformMatrix3fv(m_ID, location, 1, GL_FALSE, &mat[0][0]); }
+	inline void setUniformValue(GLint location, const glm::vec4& vec) const { glProgramUniform4fv(m_ID, location, 1, &vec[0]); }
+	inline void setUniformValue(GLint location, const glm::vec3& vec) const { glProgramUniform3fv(m_ID, location, 1, &vec[0]); }
 
 private:
     // Shader program id

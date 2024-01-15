@@ -1,7 +1,7 @@
 #version 460 core
 
 // Couleur uniforme (si donnee)
-uniform vec4 uColor;
+layout(location = 0) uniform vec4 uColor;
 
 // Entree de la couleur interpolee (vertex shader)
 in vec4 ifColor;
