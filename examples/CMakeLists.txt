@@ -17,3 +17,6 @@ add_subdirectory(01_Triangles_bindless)
 # - draw triangles with color
 add_subdirectory(02_PositionAndColor)
 add_subdirectory(02_PositionAndColor_bindless)
+
+# Seance 03: Eclairage
+add_subdirectory(03_LightingNoCamera)
