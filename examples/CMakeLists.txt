@@ -20,3 +20,6 @@ add_subdirectory(02_PositionAndColor_bindless)
 
 # Seance 03: Eclairage
 add_subdirectory(03_LightingNoCamera)
+
+# Seance 04: Transformation
+add_subdirectory(04_Transformation)
