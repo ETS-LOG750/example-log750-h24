@@ -23,3 +23,4 @@ add_subdirectory(03_LightingNoCamera)
 
 # Seance 04: Transformation
 add_subdirectory(04_Transformation)
+add_subdirectory(04_Animation)

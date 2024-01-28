@@ -111,8 +111,8 @@ int MainWindow::InitializeGL()
 	updateGeometry();
 
 	// Setup VAO
-	// Note: On peut r�utiliser le VAO pour les deux shaders
-	//  vu que les locations sont les m�mes (sp�cifier en GLSL)
+	// Note: On peut reutiliser le VAO pour les deux shaders
+	//  vu que les locations sont les memes (specifier en GLSL)
 	glBindVertexArray(m_VAOs[Triangles]);
 	// - VBO Positions
 	glBindBuffer(GL_ARRAY_BUFFER, m_VBOs[Position]);
