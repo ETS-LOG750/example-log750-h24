@@ -244,6 +244,29 @@ void MainWindow::RenderImgui()
 			m_quat2_axis = glm::vec3(0, 0, 1);
 		}
 
+		static bool from_euler = true;
+		ImGui::Checkbox("From euler", &from_euler);
+
+		if(ImGui::Button("Copy configuration")) {
+			// q1 
+			if (from_euler) {
+				glm::quat q = glm::quat(glm::eulerAngleXYZ(m_rot1.x, m_rot1.y, m_rot1.z));
+				m_quat1_axis = glm::axis(q);
+				m_quat1_angle = glm::angle(q);
+			} else {
+				m_rot1 = glm::eulerAngles(glm::quat(m_quat1_angle, m_quat1_axis));
+			}
+			// q2
+			if (from_euler) {
+				glm::quat q = glm::quat(glm::eulerAngleXYZ(m_rot2.x, m_rot2.y, m_rot2.z));
+				m_quat2_axis = glm::axis(q);
+				m_quat2_angle = glm::angle(q);
+			} else {
+				m_rot2 = glm::eulerAngles(glm::quat(m_quat2_angle, m_quat2_axis));
+			}
+
+		}
+
 
 		
 		ImGui::End();
