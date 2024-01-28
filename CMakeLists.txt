@@ -57,4 +57,11 @@ set(LIBS GLAD IMGUI glfw)
 ####################################################
 # The different projects that we are interested in #
 ####################################################
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/shared)
+set(SHARED_FILES 
+    ${CMAKE_CURRENT_SOURCE_DIR}/shared/ShaderProgram.cpp 
+    ${CMAKE_CURRENT_SOURCE_DIR}/shared/ShaderProgram.h
+)
+
 add_subdirectory(examples)
+add_subdirectory(exercices)
