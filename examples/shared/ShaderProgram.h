@@ -101,6 +101,7 @@ public:
 
     // utility uniform functions
     // ------------------------------------------------------------------------
+    // OLD setUniformValue 
     inline void setUniformValue(GLint location, bool value) const { glProgramUniform1i(m_ID, location, (int)value); }
 	inline void setUniformValue(GLint location, int value) const { glProgramUniform1i(m_ID, location, value); }
 	inline void setUniformValue(GLint location, float value) const { glProgramUniform1f(m_ID, location, value); }
@@ -108,6 +109,15 @@ public:
 	inline void setUniformValue(GLint location, const glm::mat3& mat) const { glProgramUniformMatrix3fv(m_ID, location, 1, GL_FALSE, &mat[0][0]); }
 	inline void setUniformValue(GLint location, const glm::vec4& vec) const { glProgramUniform4fv(m_ID, location, 1, &vec[0]); }
 	inline void setUniformValue(GLint location, const glm::vec3& vec) const { glProgramUniform3fv(m_ID, location, 1, &vec[0]); }
+    // Safer version
+    inline void setBool(GLint location, bool value) const { glProgramUniform1i(m_ID, location, (int)value); }
+	inline void setInt(GLint location, int value) const { glProgramUniform1i(m_ID, location, value); }
+	inline void setFloat(GLint location, float value) const { glProgramUniform1f(m_ID, location, value); }
+	inline void setMat4(GLint location, const glm::mat4& mat) const { glProgramUniformMatrix4fv(m_ID, location, 1, GL_FALSE, &mat[0][0]); }
+	inline void setMat3(GLint location, const glm::mat3& mat) const { glProgramUniformMatrix3fv(m_ID, location, 1, GL_FALSE, &mat[0][0]); }
+	inline void setVec4(GLint location, const glm::vec4& vec) const { glProgramUniform4fv(m_ID, location, 1, &vec[0]); }
+	inline void setVec3(GLint location, const glm::vec3& vec) const { glProgramUniform3fv(m_ID, location, 1, &vec[0]); }
+    inline void setVec2(GLint location, const glm::vec2& vec) const { glProgramUniform2fv(m_ID, location, 1, &vec[0]); }
 
 private:
     // Shader program id
