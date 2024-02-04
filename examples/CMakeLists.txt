@@ -17,3 +17,6 @@ add_subdirectory(03_LightingNoCamera)
 # Seance 04: Transformation
 add_subdirectory(04_Transformation)
 add_subdirectory(04_Animation)
+
+# Seance 05: Modelisation
+add_subdirectory(05_DrawSquares)
