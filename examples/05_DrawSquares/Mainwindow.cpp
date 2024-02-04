@@ -8,23 +8,30 @@
 
 #define BUFFER_OFFSET(i) ((char *)NULL + (i))
 
+#define MODERN_OPENGL 1 // 0 for old OpenGL, 1 for DSA OpenGL
+
 MainWindow::MainWindow()
 {
 }
 
 int MainWindow::Initialisation()
 {
-	// OpenGL version (usefull for imGUI and other libraries)
-	const char* glsl_version = "#version 430 core";
-
 	// glfw: initialize and configure
 	// ------------------------------
 	glfwInit();
 
 	// Request OpenGL 4.3
+#if MODERN_OPENGL
+	const char* glsl_version = "#version 460 core";
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
+	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+#else
+	const char* glsl_version = "#version 430 core";
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+#endif
 
 #ifdef __APPLE__
 	glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
@@ -115,13 +122,68 @@ int MainWindow::InitializeGL()
 		{-0.4f, -0.4f, 0.0f },
 		{  0.4f,-0.4f, 0.0f }
 	};
-	GLint IndicesShared[2][3] = {
+	GLuint IndicesShared[2][3] = {
 		{ 0, 1, 2 },
 		{ 0, 2, 3 }
 	};
 
-#define MODERN_OPENGL 0
 #if MODERN_OPENGL
+	// Generate all buffers
+	glCreateVertexArrays(NumVAOs, m_VAOs);
+	glCreateBuffers(NumBuffers, m_buffers);
+
+	// Upload vertex informations)
+	glNamedBufferData(m_buffers[SeparateVertexBuffer], sizeof(VerticesSeparate), VerticesSeparate, GL_STATIC_DRAW);
+	glNamedBufferData(m_buffers[SharedVertexBuffer], sizeof(VerticesShared), VerticesShared, GL_STATIC_DRAW);
+	glNamedBufferData(m_buffers[SharedIndexBuffer], sizeof(IndicesShared), IndicesShared, GL_STATIC_DRAW);
+	
+	//////////////////////
+	// Setup separate VAO
+	glVertexArrayAttribFormat(m_VAOs[SeparateVAO], 
+		vPositionLocation, // Attribute index 
+		3, // Number of components
+		GL_FLOAT, // Type 
+		GL_FALSE, // Normalize 
+		0 // Relative offset (first component)
+	);
+	glVertexArrayVertexBuffer(m_VAOs[SeparateVAO], 
+		vPositionLocation, // Binding point 
+		m_buffers[SeparateVertexBuffer], // VBO 
+		0, // Offset (when the position starts)
+		sizeof(glm::vec3) // Stride
+	);
+	glEnableVertexArrayAttrib(m_VAOs[SeparateVAO], 
+		vPositionLocation // Attribute index
+	);
+	glVertexArrayAttribBinding(m_VAOs[SeparateVAO], 
+		vPositionLocation, // Attribute index
+		vPositionLocation  // Binding point
+	);
+
+	/////////////////////////
+	// Setup shared index VAO
+	glVertexArrayAttribFormat(m_VAOs[SharedVAO], 
+		vPositionLocation, // Attribute index 
+		3, // Number of components
+		GL_FLOAT, // Type 
+		GL_FALSE, // Normalize 
+		0 // Relative offset (first component)
+	);
+	glVertexArrayVertexBuffer(m_VAOs[SharedVAO], 
+		vPositionLocation, // Binding point 
+		m_buffers[SharedVertexBuffer], // VBO 
+		0, // Offset (when the position starts)
+		sizeof(glm::vec3) // Stride
+	);
+	glEnableVertexArrayAttrib(m_VAOs[SharedVAO], 
+		vPositionLocation // Attribute index
+	);
+	glVertexArrayAttribBinding(m_VAOs[SharedVAO], 
+		vPositionLocation, // Attribute index
+		vPositionLocation  // Binding point
+	);
+	// Elements (index)
+	glVertexArrayElementBuffer(m_VAOs[SharedVAO], m_buffers[SharedIndexBuffer]);
 #else 
 	// Generate all buffers
 	glGenVertexArrays(NumVAOs, m_VAOs);

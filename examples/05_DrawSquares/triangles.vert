@@ -6,7 +6,7 @@ in vec4 vPosition;
 
 void main()
 {
-    vec4 p = mvMatrix * vPosition;
+    vec4 p = uMatrix * vPosition;
     gl_Position = vec4(p.xy, -p.z, p.w);
 }
 
