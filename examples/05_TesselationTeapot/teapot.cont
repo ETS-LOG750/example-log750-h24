@@ -1,0 +1,25 @@
+#version 430 core
+
+// 16: because we have a patch with 4x4 vertices
+layout (vertices = 16) out;
+
+uniform float  uInner;
+uniform float  uOuter;
+
+void
+main()
+{
+    // Inner
+    if (gl_InvocationID == 0)
+    {
+    gl_TessLevelInner[0] = uInner;
+    gl_TessLevelInner[1] = uInner;
+
+    // Outer
+    gl_TessLevelOuter[0] = uOuter;
+    gl_TessLevelOuter[1] = uOuter;
+    gl_TessLevelOuter[2] = uOuter;
+    gl_TessLevelOuter[3] = uOuter;
+    }
+    gl_out[gl_InvocationID].gl_Position = gl_in[gl_InvocationID].gl_Position;
+}

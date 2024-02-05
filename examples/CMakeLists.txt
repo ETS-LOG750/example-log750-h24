@@ -20,3 +20,5 @@ add_subdirectory(04_Animation)
 
 # Seance 05: Modelisation
 add_subdirectory(05_DrawSquares)
+add_subdirectory(05_TesselationTeapot)
+add_subdirectory(05_GeometryShader)
