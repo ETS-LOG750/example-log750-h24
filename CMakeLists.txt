@@ -63,6 +63,8 @@ set(SHARED_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/shared/ShaderProgram.h
     ${CMAKE_CURRENT_SOURCE_DIR}/shared/OBJLoader.cpp 
     ${CMAKE_CURRENT_SOURCE_DIR}/shared/OBJLoader.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/shared/Camera.cpp 
+    ${CMAKE_CURRENT_SOURCE_DIR}/shared/Camera.h
 )
 
 add_subdirectory(examples)
