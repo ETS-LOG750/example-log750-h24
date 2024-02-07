@@ -18,6 +18,7 @@ inline glm::uvec4 GetRGBA(uint32_t PackedUint) {
 
 	return glm::uvec4(red, green, blue, alpha);
 }
+// Fonction inverse
 inline uint32_t GetIntFromRGBA(glm::uvec4& RGBA)
 {
 	return (RGBA.a << 24) + (RGBA.r << 16) + (RGBA.g << 8) + RGBA.b;

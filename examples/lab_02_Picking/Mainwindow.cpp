@@ -345,7 +345,15 @@ int MainWindow::InitGeometrySpiral()
 void MainWindow::PerformSelection(int x, int y)
 {
 	// Map (dictionnary) used to store the correspondences between colors and spiral number.
-	std::map<unsigned int, int> myMap;
+	// This to found easily the object associated to a given color
+	struct compUVec4 {
+		bool operator()(const glm::uvec4& a, const glm::uvec4& b) const {
+			auto ia = (a.a << 24) + (a.r << 16) + (a.g << 8) + a.b;
+			auto ib = (b.a << 24) + (b.r << 16) + (b.g << 8) + b.b;
+			return ia < ib;
+		}
+	};
+	std::map<glm::uvec4, uint32_t, compUVec4> myMap;
 	// Identificator ID used as a color for rendering and as a key for the map.
 	std::cout << "Viewer::performSelection(" << x << ", " << y << ")" << std::endl;
 
@@ -370,21 +378,19 @@ void MainWindow::PerformSelection(int x, int y)
 	// Note that we use dedicated VAO in this case
 	glBindVertexArray(m_VAOs[VAO_SpiralPicking]);
 	m_pickingShader->setMat4(m_pickingShaderLocations.uProjMatrix, m_projectionMatrix);
-	for (int i = 0; i < NbSpirals; ++i)
+	for (uint32_t id = 0; id < NbSpirals; ++id)
 	{
 		// Save transformations
 		glm::mat4 currentTransformation(m_modelViewMatrix);
 
 		// Translate spiral
 		currentTransformation = glm::translate(currentTransformation,
-			glm::vec3(cos(2.0f * i * float(M_PI) / static_cast<float>(NbSpirals)),sin(2.0f * i * float(M_PI) / static_cast<float>(NbSpirals)),0.0));
+			glm::vec3(cos(2.0f * id * float(M_PI) / static_cast<float>(NbSpirals)),sin(2.0f * id * float(M_PI) / static_cast<float>(NbSpirals)),0.0));
 
 		// For convenience, convert the ID to a color object.
-		glm::uvec4 color = GetRGBA(i);
-		// Get the equivalent of the color as an unsigned long.
-		unsigned int key = GetIntFromRGBA(color);
-		// Insert the key (unsigned long) in the map.
-		myMap.insert({ key, i });
+		glm::uvec4 color = GetRGBA(id);
+		myMap.insert({color, id}); 
+
 
 		// Set the color value for the shader.
 		// Need to send color where each channel is between [0, 1]
@@ -411,10 +417,8 @@ void MainWindow::PerformSelection(int x, int y)
 
 	// For convenience, construct a color object matching what was read in the frame buffer.
 	glm::uvec4 pickedColor(pixelData[0], pixelData[1], pixelData[2], pixelData[3]);
-	// Get the equivalent of the color as an unsigned int. This is the key we stored earlier in the map.
-	unsigned int key = GetIntFromRGBA(pickedColor);
 	// Get the value matching the key.
-	auto iteratorToPair = myMap.find(key);
+	auto iteratorToPair = myMap.find(pickedColor);
 	m_selectedSpiral = (iteratorToPair != myMap.end()) ? iteratorToPair->second : -1;
 	std::cout << "m_selectedSpiral: " << m_selectedSpiral << std::endl;
 }
