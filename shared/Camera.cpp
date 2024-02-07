@@ -110,19 +110,5 @@ void Camera::computeAngles() {
 }
 
 void Camera::updateProjectionMatrix() {
-    if (m_nearFarFixed) {
-        m_proj_matrix = glm::perspective(m_fov, m_image_ratio, 0.1f, 100.0f);
-    }
-    else {
-        m_proj_matrix = glm::perspective(m_fov, m_image_ratio, zNear(), zFar());
-    }
-}
-
-void Camera::showEntireScene() {
-    float yview = m_scene_radius / sin(m_fov / 2);
-    float xview = m_scene_radius / (atan ( tan(m_fov/2.0) * m_image_ratio ));
-    float distance = std::max(xview, yview);
-    
-    m_position = m_scene_center - distance * m_direction;
-    updateProjectionMatrix();
+    m_proj_matrix = glm::perspective(m_fov, m_image_ratio, 0.1f, 300.0f);
 }
