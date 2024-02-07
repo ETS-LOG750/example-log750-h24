@@ -1,3 +1,6 @@
+# Laboratoires 
+add_subdirectory(lab_02_Picking)
+
 # Seance 01: Introduction
 # - imGUI example
 add_subdirectory(01_imGUIExample)
