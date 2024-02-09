@@ -25,3 +25,6 @@ add_subdirectory(04_Animation)
 add_subdirectory(05_DrawSquares)
 add_subdirectory(05_TesselationTeapot)
 add_subdirectory(05_GeometryShader)
+
+# Seance 06: Camera
+add_subdirectory(06_Unproject)
