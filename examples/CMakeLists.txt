@@ -27,4 +27,5 @@ add_subdirectory(05_TesselationTeapot)
 add_subdirectory(05_GeometryShader)
 
 # Seance 06: Camera
+add_subdirectory(06_LightingCamera)
 add_subdirectory(06_Unproject)
