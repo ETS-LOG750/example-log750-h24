@@ -34,14 +34,14 @@ void MainWindow::FramebufferSizeCallback(int width, int height) {
 int MainWindow::Initialisation()
 {
 	// OpenGL version (usefull for imGUI and other libraries)
-	const char* glsl_version = "#version 430 core";
+	const char* glsl_version = "#version 460 core";
 
 	// glfw: initialize and configure
     // ------------------------------
 	glfwInit();
 
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
 #ifdef __APPLE__
@@ -221,28 +221,22 @@ void MainWindow::RenderImgui()
 		};
 		bool changed = ImGui::Combo("Mode", &m_mode, items, IM_ARRAYSIZE(items));
 		if (changed && m_mode == 0) {
-			glBindTexture(GL_TEXTURE_2D, m_textureDiffuseID);
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-			glBindTexture(GL_TEXTURE_2D, m_textureARMID);
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+			glTextureParameteri(m_textureDiffuseID, GL_TEXTURE_WRAP_S, GL_REPEAT);
+			glTextureParameteri(m_textureDiffuseID, GL_TEXTURE_WRAP_T, GL_REPEAT);
+			glTextureParameteri(m_textureARMID, GL_TEXTURE_WRAP_S, GL_REPEAT);
+			glTextureParameteri(m_textureARMID, GL_TEXTURE_WRAP_T, GL_REPEAT);
 		}
 		else if (changed && m_mode == 1) {
-			glBindTexture(GL_TEXTURE_2D, m_textureDiffuseID);
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-			glBindTexture(GL_TEXTURE_2D, m_textureARMID);
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+			glTextureParameteri(m_textureDiffuseID,GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+			glTextureParameteri(m_textureDiffuseID,GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+			glTextureParameteri(m_textureARMID,GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+			glTextureParameteri(m_textureARMID,GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 		}
 		else if (changed && m_mode == 2) {
-			glBindTexture(GL_TEXTURE_2D, m_textureDiffuseID);
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
-			glBindTexture(GL_TEXTURE_2D, m_textureARMID);
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
+			glTextureParameteri(m_textureDiffuseID,GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
+			glTextureParameteri(m_textureDiffuseID,GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
+			glTextureParameteri(m_textureARMID,GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
+			glTextureParameteri(m_textureARMID,GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
 
 		}
 		ImGui::Checkbox("Activate (ARM)", &m_activateARM);
@@ -330,7 +324,8 @@ void MainWindow::updateCameraEye()
 
 bool MainWindow::loadTexture(const std::string& path, unsigned int& textureID, GLint uvMode, GLint minMode, GLint magMode)
 {
-	glGenTextures(1, &textureID);
+	// OpenGL 4.6 -- need to specify the texture type
+	glCreateTextures(GL_TEXTURE_2D, 1, &textureID);
 
 	// Ask the library to flip the image horizontally
 	// This is necessary as TexImage2D assume "The first element corresponds to the lower left corner of the texture image"
@@ -341,16 +336,16 @@ bool MainWindow::loadTexture(const std::string& path, unsigned int& textureID, G
 	unsigned char* data = stbi_load(path.c_str(), &width, &height, &nrComponents, STBI_rgb_alpha);
 	if (data)
 	{
-		glBindTexture(GL_TEXTURE_2D, textureID);
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
+		glTextureStorage2D(textureID, 1, GL_RGBA8, width, height);
+		glTextureSubImage2D(textureID, 0, 0, 0, width, height, GL_RGBA, GL_UNSIGNED_BYTE, data);
 		if (minMode == GL_LINEAR_MIPMAP_LINEAR) {
-			glGenerateMipmap(GL_TEXTURE_2D);
+			glGenerateTextureMipmap(textureID);
 		}
 
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, uvMode);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, uvMode);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, minMode);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, magMode);
+		glTextureParameteri(textureID, GL_TEXTURE_WRAP_S, uvMode);
+		glTextureParameteri(textureID, GL_TEXTURE_WRAP_T, uvMode);
+		glTextureParameteri(textureID, GL_TEXTURE_MIN_FILTER, minMode);
+		glTextureParameteri(textureID, GL_TEXTURE_MAG_FILTER, magMode);
 
 		stbi_image_free(data);
 

@@ -32,3 +32,4 @@ add_subdirectory(06_Unproject)
 
 # Seance 09: Textures
 add_subdirectory(09_Texture)
+add_subdirectory(09_Texture_bindless)
