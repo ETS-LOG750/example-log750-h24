@@ -29,3 +29,6 @@ add_subdirectory(05_GeometryShader)
 # Seance 06: Camera
 add_subdirectory(06_LightingCamera)
 add_subdirectory(06_Unproject)
+
+# Seance 09: Textures
+add_subdirectory(09_Texture)
