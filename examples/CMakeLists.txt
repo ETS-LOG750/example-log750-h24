@@ -34,3 +34,7 @@ add_subdirectory(06_Unproject)
 add_subdirectory(09_Texture)
 add_subdirectory(09_Texture_dsa)
 add_subdirectory(09_Texture_dsa_bindless)
+
+# Seance 10: Texture avancee
+add_subdirectory(10_NormalMap)
+add_subdirectory(10_Sky)

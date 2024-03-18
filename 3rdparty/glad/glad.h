@@ -20,7 +20,7 @@
 */
 
 
-#ifndef __glad_h_
+#ifndef __glad_h_ 
 #define __glad_h_
 
 #ifdef __gl_h_
