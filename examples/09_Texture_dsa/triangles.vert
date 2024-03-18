@@ -1,4 +1,4 @@
-#version 400 core
+#version 420 core
 uniform mat4 mvMatrix;
 uniform mat4 projMatrix;
 uniform mat3 normalMatrix;

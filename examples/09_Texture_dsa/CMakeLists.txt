@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.2 FATAL_ERROR)
-project(09_Texture_bindless)
+project(09_Texture_dsa)
 
 # Add source files
 SET(SOURCE_FILES 

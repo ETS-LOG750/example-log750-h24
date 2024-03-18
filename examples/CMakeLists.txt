@@ -7,12 +7,12 @@ add_subdirectory(01_imGUIExample)
 add_subdirectory(01_imGUIDemo)
 # - draw 2 triangles (simplest example)
 add_subdirectory(01_Triangles)
-add_subdirectory(01_Triangles_bindless)
+add_subdirectory(01_Triangles_dsa)
 
 # Seance 02: Colors
 # - draw triangles with color
 add_subdirectory(02_PositionAndColor)
-add_subdirectory(02_PositionAndColor_bindless)
+add_subdirectory(02_PositionAndColor_dsa)
 
 # Seance 03: Eclairage
 add_subdirectory(03_LightingNoCamera)
@@ -32,4 +32,4 @@ add_subdirectory(06_Unproject)
 
 # Seance 09: Textures
 add_subdirectory(09_Texture)
-add_subdirectory(09_Texture_bindless)
+add_subdirectory(09_Texture_dsa)

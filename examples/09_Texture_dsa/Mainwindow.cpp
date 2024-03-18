@@ -263,17 +263,10 @@ void MainWindow::RenderScene()
 	glUseProgram(m_mainShader->programId());
 	m_mainShader->setBool(m_uniforms.activateARM, m_activateARM);
 
-	// Two way for textures: 
-	// 1) set the uniform value corresponding to the texture to match the texture unit
-	// 2) get the uniform value corresponding to the texture and use the correct texture unit
-	// here we will do the first solution
-	m_mainShader->setInt(m_uniforms.textureDiffuse, 0);
-	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, m_textureDiffuseID);
-	m_mainShader->setInt(m_uniforms.textureARM, 1);
-	glActiveTexture(GL_TEXTURE1);
-	glBindTexture(GL_TEXTURE_2D, m_textureARMID);
-
+	// Note that binding point are configured inside the shader
+	glBindTextureUnit(0, m_textureDiffuseID);
+	glBindTextureUnit(1, m_textureARMID);
+	
 	// Camera specification (for the shader)
 	glm::mat4 lookAt = glm::lookAt(m_eye, m_at, m_up);
 	m_mainShader->setMat4(m_uniforms.mvMatrix, lookAt);

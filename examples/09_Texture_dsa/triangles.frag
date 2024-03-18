@@ -1,8 +1,8 @@
-#version 400 core
+#version 420 core
 
 // Texture
-uniform sampler2D texDiffuse;
-uniform sampler2D texARM;
+layout(binding = 0) uniform sampler2D texDiffuse;
+layout(binding = 1) uniform sampler2D texARM;
 
 uniform bool activateARM;
 
