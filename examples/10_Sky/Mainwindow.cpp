@@ -143,20 +143,15 @@ int MainWindow::InitializeGL()
         std::cerr << "Unable to find shader location for " << "vNormal" << std::endl;
         return 3;
     }
-    m_uMain.diffuseColor = m_mainShader->uniformLocation("diffuseColor");
-    m_uMain.lightIntensity = m_mainShader->uniformLocation("pointIntensity");
     m_uMain.mvMatrix = m_mainShader->uniformLocation("mvMatrix");
     m_uMain.projMatrix = m_mainShader->uniformLocation("projMatrix");
-    m_uMain.normalMatrix = m_mainShader->uniformLocation("normalMatrix");
-    if (m_uMain.diffuseColor < 0 || m_uMain.lightIntensity < 0 || m_uMain.mvMatrix < 0 || m_uMain.projMatrix < 0 || m_uMain.normalMatrix < 0) {
-        std::cerr << "Unable to find shader location for " << "diffuseColor, pointIntensity, mvMatrix, projMatrix, normalMatrix" << std::endl;
+    m_uMain.cameraPos = m_mainShader->uniformLocation("cameraPos");
+    m_uMain.texSkydome = m_mainShader->uniformLocation("texSkydome");
+    m_uMain.useFresnel = m_mainShader->uniformLocation("useFresnel");
+    if(m_uMain.texSkydome < 0 | m_uMain.mvMatrix < 0 | m_uMain.projMatrix < 0 | m_uMain.cameraPos < 0 | m_uMain.useFresnel < 0) {
+        std::cerr << "Unable to find shader location for " << "mvMatrix, projMatrix, cameraPos, texSkydome, useFresnel" << std::endl;
         return 3;
     }
-
-    m_mainShader->setVec3(m_uMain.diffuseColor, m_uMainDiffColor);
-    m_mainShader->setVec3(m_uMain.lightIntensity, m_uMainLightInt);
-
-
 
     std::cout << "Load textures ... \n";
     std::string assets_dir = ASSETS_DIR;
@@ -165,7 +160,10 @@ int MainWindow::InitializeGL()
         std::cerr << "Error when loading image skydome2.png\n";
         return 5;
     }
+
+    // Set texture unit (all 0)
     m_skydomeShader->setInt(m_uSky.texSkydome, 0);
+    m_mainShader->setInt(m_uMain.texSkydome, 0);
 
     std::cout << "Load geometry ... \n";
     glGenVertexArrays(NumVAOs, m_VAOs);
@@ -194,6 +192,10 @@ void MainWindow::RenderImgui()
         static int counter = 0;
 
         ImGui::Begin("Sky");
+
+        if(ImGui::Checkbox("Use Fresnel", &m_useFresnel)) {
+            m_mainShader->setInt(m_uMain.useFresnel, m_useFresnel);
+        }
 
         ImGui::End();
     }
@@ -226,7 +228,7 @@ void MainWindow::RenderScene()
     glUseProgram(m_mainShader->programId());
     m_mainShader->setMat4(m_uMain.projMatrix, m_camera.projectionMatrix());
     m_mainShader->setMat4(m_uMain.mvMatrix, viewMatrix);
-    m_mainShader->setMat3(m_uMain.normalMatrix, normalMat);
+    m_mainShader->setVec3(m_uMain.cameraPos, m_camera.position());
     glDrawElements(GL_TRIANGLES, numTriSphere * 3, GL_UNSIGNED_INT, 0);
 }
 

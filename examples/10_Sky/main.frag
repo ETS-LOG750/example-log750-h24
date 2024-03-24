@@ -1,40 +1,42 @@
 #version 400 core
 
-in vec3 fNormal;
-in vec3 fPosition;
+uniform vec3 cameraPos;
+uniform sampler2D texSkydome;
+uniform bool useFresnel; 
+
+in vec3 fNormalWorld;
+in vec3 fPositionWorld;
 
 out vec4 oColor;
 
-uniform vec3 diffuseColor;
-uniform vec3 pointIntensity;
+#define PI 3.14159265358979323844
 
 void main()
 {
-    // Materials
-    vec3 Kd = diffuseColor;
-    vec3 Ks = vec3(0.0);
-    float n = 128;
-   
     // Local model
-    vec3 nViewDirection = normalize(vec3(0.0)-fPosition);
-    vec3 nNormal = normalize(fNormal);
-    
-    // ========== Light contribution computation
-    vec3 contrib = vec3(0.0,0.0,0.0);
-    
-    // Light 1 (point light)
-    vec3 lightPosition = vec3(0,0,0);
-    vec3 nLightDirection = normalize(lightPosition-fPosition);
+    vec3 viewDirectionWorld = normalize(cameraPos - fPositionWorld);
+    vec3 normalWorld = normalize(fNormalWorld);
 
-    // Distance
-    float distSqr = dot(fPosition, fPosition);
-    float diffuse = dot(nNormal, nLightDirection);
-    if (diffuse > 0.0)
-    {
-        vec3 reflectL = normalize(-nLightDirection+2.0*nNormal*dot(nNormal,nLightDirection));
-        float specular = pow(max(0.0, dot(nViewDirection, reflectL)), n);
-        contrib += (Kd * diffuse + Ks * specular) * pointIntensity;
+    // Do a reflection
+    vec3 r = reflect(-viewDirectionWorld, normalWorld);
+
+    // Calcul des coordonnees UV pour lire la carte d'env
+    float phi=atan(r.z, r.x)* 0.5 / PI + 0.5;
+    float theta = 1.0 - acos(r.y) / PI;
+    vec2 uv = vec2(phi, theta);
+
+  
+    float fresnel = 1.0;
+    if(useFresnel) {
+        // Add fresnel term for more realism
+        // https://graphicscompendium.com/raytracing/11-fresnel-beer 
+        // This is optional 
+        float eta = 1.3;
+        float f0 = ((eta - 1)*(eta - 1)) / ((eta + 1) * (eta + 1));
+        float cosTheta = dot(r, normalWorld);
+        fresnel = f0 + (1 - f0) * pow(1 - cosTheta, 5);
     }
 
-    oColor = vec4(contrib, 1.0);
+    // Couleur finale
+    oColor = fresnel * texture(texSkydome, uv);
 }

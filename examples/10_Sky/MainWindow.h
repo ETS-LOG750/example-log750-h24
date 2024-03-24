@@ -59,15 +59,14 @@ private:
 	std::unique_ptr<ShaderProgram> m_mainShader = nullptr;
 	int m_vMainPos = -1;
 	int m_vMainNormal = -1;
-	glm::vec3 m_uMainDiffColor = glm::vec3(0.8);
-	glm::vec3 m_uMainLightInt = glm::vec3(1.0);
 	struct {
-		GLint diffuseColor;
-		GLint lightIntensity;
 		GLint mvMatrix;
 		GLint projMatrix;
-		GLint normalMatrix;
+		GLint cameraPos;
+		GLint texSkydome;
+		GLint useFresnel;
 	} m_uMain;
+	bool m_useFresnel = false;
 
 	// Camera
 	Camera m_camera;
