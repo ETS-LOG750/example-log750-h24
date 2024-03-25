@@ -64,7 +64,7 @@ void APIENTRY glDebugOutput(GLenum source,
 
 // utility function for checking shader compilation/linking errors.
 // ------------------------------------------------------------------------
-bool checkCompileErrors(GLuint shader, std::string type)
+bool checkCompileErrors(GLuint shader, std::string type, std::string filename)
 {
 	int success;
 	char infoLog[1024];
@@ -74,8 +74,10 @@ bool checkCompileErrors(GLuint shader, std::string type)
 		if (!success)
 		{
 			glGetShaderInfoLog(shader, 1024, NULL, infoLog);
-			std::cerr << "ERROR::SHADER_COMPILATION_ERROR of type: " << type << "\n"
-				<< infoLog << "\n -- --------------------------------------------------- -- " << std::endl;
+			std::cerr << "ERROR::SHADER_COMPILATION_ERROR of type: " << type << "\n";
+			if (filename != "")
+				std::cerr << "Filename: " << filename << "\n";
+			std::cerr << infoLog << "\n -- --------------------------------------------------- -- " << std::endl;
 		}
 	}
 	else
@@ -84,8 +86,10 @@ bool checkCompileErrors(GLuint shader, std::string type)
 		if (!success)
 		{
 			glGetProgramInfoLog(shader, 1024, NULL, infoLog);
-			std::cerr << "ERROR::PROGRAM_LINKING_ERROR of type: " << type << "\n"
-				<< infoLog << "\n -- --------------------------------------------------- -- " << std::endl;
+			std::cerr << "ERROR::PROGRAM_LINKING_ERROR of type: " << type << "\n";
+			if (filename != "")
+				std::cerr << "Filename: " << filename << "\n";
+			std::cerr << infoLog << "\n -- --------------------------------------------------- -- " << std::endl;
 		}
 	}
 	return success;
@@ -148,7 +152,7 @@ bool ShaderProgram::addShaderFromSource(GLenum shader_type, const std::string& p
 	const char* code_c_str = code.c_str();
 	glShaderSource(shader_id, 1, &code_c_str, NULL);
 	glCompileShader(shader_id);
-	bool success = checkCompileErrors(shader_id, shader_type_str);
+	bool success = checkCompileErrors(shader_id, shader_type_str, path);
 	glAttachShader(m_ID, shader_id);
 	if (success) {
 		m_shaders_ids[shader_type_str] = shader_id;
@@ -158,6 +162,6 @@ bool ShaderProgram::addShaderFromSource(GLenum shader_type, const std::string& p
 
 bool ShaderProgram::link() {
 	glLinkProgram(m_ID);
-	m_linked = checkCompileErrors(m_ID, "PROGRAM");
+	m_linked = checkCompileErrors(m_ID, "PROGRAM", "");
 	return m_linked;
 }
