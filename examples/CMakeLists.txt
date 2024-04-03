@@ -41,3 +41,6 @@ add_subdirectory(10_Sky)
 
 # Seance 11: Visibilite
 add_subdirectory(11_SimpleFBO)
+
+# Seance 12: Ombres
+add_subdirectory(12_ShadowMap)
