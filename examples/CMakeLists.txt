@@ -44,3 +44,7 @@ add_subdirectory(11_SimpleFBO)
 
 # Seance 12: Ombres
 add_subdirectory(12_ShadowMap)
+
+# Seance 13: Particules
+add_subdirectory(13_Particules)
+add_subdirectory(13_Particules_compute)
