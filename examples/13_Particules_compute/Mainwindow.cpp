@@ -236,7 +236,6 @@ void MainWindow::RenderImgui()
 		ImGui::InputFloat("Global Size", &m_size);
 		ImGui::InputFloat("Transparency", &m_transparency);
 		ImGui::Checkbox("Use Texture?", &m_useTexture);
-		ImGui::Checkbox("Sorting", &m_sorting);
 		m_speed = std::max(0.f, m_speed);
 		m_size = std::max(0.000001f, m_size);
 		m_transparency = std::max(0.f, std::min(1.f, m_transparency));

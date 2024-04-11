@@ -130,7 +130,6 @@ private:
 	float m_size = 0.05f;
 	float m_transparency = 1.0f;
 	bool m_useTexture = false;
-	bool m_sorting = true;
 
 	// Shader
 	std::unique_ptr<ShaderProgram> m_mainShader = nullptr;

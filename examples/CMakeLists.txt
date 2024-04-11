@@ -1,5 +1,6 @@
 # Laboratoires 
 add_subdirectory(lab_02_Picking)
+add_subdirectory(lab_03_ObjLoader)
 
 # Seance 01: Introduction
 # - imGUI example
